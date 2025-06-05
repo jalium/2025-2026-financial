@@ -193,6 +193,8 @@ def run_simulation(
                 "HELOC Interest": heloc_int,
                 "Label": label,
                 "Monthly Surplus": net - cra_int - heloc_int,
+                "Monthly Income": inflow,
+                "Monthly Expenses": monthly_expenses,
             }
         )
 
@@ -264,45 +266,82 @@ fig2.update_layout(
 )
 st.plotly_chart(fig2, use_container_width=True)
 
-# Monthly surplus line chart
-fig3 = go.Figure()
-fig3.add_trace(
+# Combined income, expenses, and surplus chart
+fig_combined = go.Figure()
+
+fig_combined.add_trace(
+    go.Scatter(
+        x=df["Month"],
+        y=df["Monthly Income"],
+        name="Monthly Income",
+        line=dict(color="blue"),
+        mode="lines+markers",
+        marker=dict(size=6),
+    )
+)
+fig_combined.add_trace(
+    go.Scatter(
+        x=df["Month"],
+        y=df["Monthly Expenses"],
+        name="Monthly Expenses",
+        line=dict(color="orange"),
+        mode="lines+markers",
+        marker=dict(size=6),
+    )
+)
+
+# Surplus positive values in green
+fig_combined.add_trace(
     go.Scatter(
         x=df["Month"],
         y=[val if val >= 0 else None for val in df["Monthly Surplus"]],
         name="Surplus",
         line=dict(color="green"),
+        mode="lines+markers",
+        marker=dict(size=6),
     )
 )
-fig3.add_trace(
+# Surplus negative values in red (deficit)
+fig_combined.add_trace(
     go.Scatter(
         x=df["Month"],
         y=[val if val < 0 else None for val in df["Monthly Surplus"]],
         name="Deficit",
         line=dict(color="red"),
+        mode="lines+markers",
+        marker=dict(size=6),
     )
 )
-fig3.update_layout(
-    title="Monthly Net Surplus (Income - Expenses - Interest)",
+
+# Add annotations for key events as markers with hover text
+event_months = df[df["Label"] != ""]
+for i, row in event_months.iterrows():
+    # Place annotation marker at cash or surplus line (choose surplus for context)
+    y_val = row["Monthly Surplus"]
+    # If surplus is None or zero, fallback to zero for marker placement
+    if pd.isna(y_val):
+        y_val = 0
+    fig_combined.add_trace(
+        go.Scatter(
+            x=[row["Month"]],
+            y=[y_val],
+            mode="markers",
+            marker=dict(symbol="star", size=12, color="purple"),
+            name=row["Label"],
+            hovertemplate=f"{row['Label']}<br>Month: {row['Month']}<extra></extra>",
+            showlegend=False,
+        )
+    )
+
+fig_combined.update_layout(
+    title="Monthly Income, Expenses, and Surplus",
     xaxis_title="Month",
     yaxis_title="CAD",
-    height=400,
+    height=500,
+    hovermode="x unified",
 )
-st.plotly_chart(fig3, use_container_width=True)
 
-# Monthly income vs expenses chart
-monthly_income = (
-    jack_income * fx_rate
-    + df["Month"].apply(lambda m: jess_income if m >= jess_start else 0)
-    + 3400
-)
-monthly_expenses = [14500 if m < "2025-11" else 12800 for m in df["Month"]]
-
-fig4 = go.Figure()
-fig4.add_trace(go.Scatter(x=df["Month"], y=monthly_income, name="Monthly Income", line=dict(color="blue")))
-fig4.add_trace(go.Scatter(x=df["Month"], y=monthly_expenses, name="Monthly Expenses", line=dict(color="orange")))
-fig4.update_layout(title="Monthly Income vs Expenses", xaxis_title="Month", yaxis_title="CAD", height=400)
-st.plotly_chart(fig4, use_container_width=True)
+st.plotly_chart(fig_combined, use_container_width=True)
 
 # Assumptions Sidebar Section
 with st.expander("📋 Assumptions Summary", expanded=True):
