@@ -4,6 +4,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
+st.set_page_config(layout="wide")
+
 # Minimalistic header font style
 st.markdown(
     "<style>h1 { font-family: 'Helvetica Neue', sans-serif; font-weight: 300; }</style>",
@@ -197,8 +199,6 @@ def run_simulation(
 
     return pd.DataFrame(data)
 
-
-st.set_page_config(layout="wide")
 
 # Sidebar controls
 st.sidebar.title("🧭 Navigate Your Scenario")
