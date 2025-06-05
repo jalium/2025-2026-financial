@@ -77,7 +77,7 @@ def run_simulation(
 
         # Apply cottage proceeds to CRA first
         if m_str == cottage_month:
-            label = "Cottage Sale"
+            label = "Cottage"
             net_cottage_proceeds = cottage_sale_price - 285000  # 245K mortgage + 40K tax estimate
             if cra_bal > 0:
                 applied = min(net_cottage_proceeds, cra_bal)
@@ -99,7 +99,7 @@ def run_simulation(
             # add $420K sale proceeds, $135K goes to debt as before, rest used for taxes + capital gains
             # assume $12K tax bill appears following month
         elif m_str == "2025-11":
-            label = "Capital Gains Tax"
+            label = "CG Tax"
             cash -= 12000
 
         # Interest accrual
@@ -127,7 +127,7 @@ def run_simulation(
 
         # Apply loan repayment at end of 2026
         if m_str == loan_repay_month:
-            label += " | Loan Repayment"
+            label += " | Loan"
             cash -= 50000
 
         # Apply remaining available_cash to CRA first, then HELOC
@@ -146,17 +146,17 @@ def run_simulation(
 
         # Annotations
         if m_str == "2025-11":
-            label += "Capital Gains Tax"
+            label += "CG Tax"
         if m_str == cottage_month:
-            label += " | Cottage Sale"
+            label += " | Cottage"
         if m_str == bonus_month:
             label += " | Bonus"
         if m_str == refund_month:
-            label += " | Tax Refund"
+            label += " | Refund"
         if m_str == jessica_start_month:
-            label += " | Jessica Starts Work"
+            label += " | Jessica Starts"
         if m_str == "2026-01":
-            label += " | FTC Relief Starts"
+            label += " | FTC Relief"
         if not cra_paid_off and cra_bal <= 0:
             label += " | CRA Paid Off"
             cra_paid_off = True
@@ -164,24 +164,6 @@ def run_simulation(
             label += " | HELOC Paid Off"
             heloc_paid_off = True
         label = label.strip(" |")
-
-        # Overwrite label for key events for clarity
-        if m_str == "2026-01":
-            label = "FTC Relief Starts"
-        if not cra_paid_off and cra_bal <= 0:
-            label = "CRA Paid Off"
-            cra_paid_off = True
-        elif not heloc_paid_off and heloc_bal <= 0:
-            label = "HELOC Paid Off"
-            heloc_paid_off = True
-        elif m_str == cottage_month:
-            label = "Cottage Sale"
-        elif m_str == bonus_month:
-            label = "Bonus"
-        elif m_str == refund_month:
-            label = "Tax Refund"
-        elif m_str == jessica_start_month:
-            label = "Jessica Starts Work"
 
         data.append(
             {
