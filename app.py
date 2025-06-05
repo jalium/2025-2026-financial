@@ -229,21 +229,32 @@ fig.add_trace(
     go.Scatter(x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance", line=dict(dash="dot"))
 )
 
-# Add text labels for key dips with increased vertical offset and improved readability
+# Improved annotation stacking: stack event labels per month with incremental yshift and alternate xshift
+month_annotation_count = {}
 for i, row in df.iterrows():
     if row["Label"]:
         events = row["Label"].split(" | ")
+        month = row["Month"]
+        if month not in month_annotation_count:
+            month_annotation_count[month] = 0
         for idx, event in enumerate(events):
-            yshift_val = 40 + idx * 20
+            # Stack each event vertically for a given month
+            count = month_annotation_count[month]
+            yshift_val = 25 + count * 25
+            # Alternate xshift slightly for clarity
+            xshift_val = (-10 if count % 2 == 0 else 10)
             fig.add_annotation(
-                x=row["Month"],
+                x=month,
                 y=row["Cash"],
                 text=event,
                 showarrow=True,
                 arrowhead=1,
                 yshift=yshift_val,
-                bgcolor="white"
+                xshift=xshift_val,
+                bgcolor="white",
+                font=dict(size=10)
             )
+            month_annotation_count[month] += 1
 
 fig.update_layout(
     title="Cash and Debt Balances Over Time", xaxis_title="Month", yaxis_title="CAD", height=600
