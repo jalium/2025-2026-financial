@@ -247,10 +247,18 @@ fig.add_trace(
     go.Scatter(x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance", line=dict(dash="dot"))
 )
 
-# Add text labels for key dips
+# Add text labels for key dips with increased vertical offset and improved readability
 for i, row in df.iterrows():
     if row["Label"]:
-        fig.add_annotation(x=row["Month"], y=row["Cash"], text=row["Label"], showarrow=True, arrowhead=1)
+        fig.add_annotation(
+            x=row["Month"],
+            y=row["Cash"],
+            text=row["Label"],
+            showarrow=True,
+            arrowhead=1,
+            yshift=40,
+            bgcolor="white"
+        )
 
 fig.update_layout(
     title="Cash and Debt Balances Over Time", xaxis_title="Month", yaxis_title="CAD", height=600
@@ -347,25 +355,25 @@ st.plotly_chart(fig_combined, use_container_width=True)
 with st.expander("📋 Assumptions Summary", expanded=True):
     st.markdown(
         """
-    ### 💡 Key Financial Assumptions
-    - **Starting Cash:** $20,000 CAD
-    - **Jack’s Income:** $12,600 USD/month × FX → ~17,010 CAD
-    - **Jessica’s Income:** $5,000 CAD/month from selected start date
-    - **Rental Income:** $3,400 CAD/month from Esplanade (ongoing)
-    - **Expenses:** $14,500/month before cottage sale, $12,800/month after
-    - **One-time Bonus:** July 2025 (user-defined, default $50K CAD)
-    - **Tax Refund:** $28,046 CAD in October 2025 (from ABIL claim)
-    - **Cottage Sale:** $420K sale in October 2025; $135K to debt; $12K tax hit in Nov
-    - **CRA Interest:** 9.38% annually (compounded monthly)
-    - **HELOC Interest:** 5.45% annually (compounded monthly)
-    - **U.S. FTC Relief:** +$1,200/month in 2026, from Canadian capital gain FTCs
+### 💡 Key Financial Assumptions
+- **Starting Cash:** $20,000 CAD
+- **Jack’s Income:** $12,600 USD/month × FX → approx. $17,010 CAD/month
+- **Jessica’s Income:** $5,000 CAD/month starting from the selected month
+- **Rental Income:** $3,400 CAD/month (Esplanade)
+- **Expenses:** $18,700/month before cottage sale, $17,000/month after
+- **Bonus & Loan:** $50K bonus + $50K interest-free loan in July 2025 (loan repaid Dec 2026)
+- **Tax Refund:** $28,046 CAD in Oct 2025 (from ABIL claim)
+- **Cottage Sale:** $420K in Oct 2025; $135K applied to debt; $12K tax due in April 2026
+- **CRA Interest Rate:** 9.38% annually, monthly compounding
+- **HELOC Interest Rate:** 5.45% annually, monthly compounding
+- **U.S. FTC Relief:** +$1,200/month from Jan 2026 due to Canadian capital gains
 
-    ### 🧮 Cash Flow Logic
-    - Income pays expenses first
-    - CRA/HELOC interest applied monthly
-    - Any surplus goes to CRA → HELOC
-    - Cash builds only after debts are fully paid
-    """
+### 📊 Cash Flow Logic
+- Net income pays expenses first
+- CRA and HELOC interest applied monthly
+- Surplus cash goes first to CRA, then HELOC
+- Cash is preserved until debt is fully paid
+        """
     )
 
 # Expense and Income Summary Table
