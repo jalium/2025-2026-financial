@@ -229,32 +229,25 @@ fig.add_trace(
     go.Scatter(x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance", line=dict(dash="dot"))
 )
 
-# Improved annotation stacking: stack event labels per month with incremental yshift and alternate xshift
-month_annotation_count = {}
-for i, row in df.iterrows():
-    if row["Label"]:
-        events = row["Label"].split(" | ")
-        month = row["Month"]
-        if month not in month_annotation_count:
-            month_annotation_count[month] = 0
-        for idx, event in enumerate(events):
-            # Stack each event vertically for a given month
-            count = month_annotation_count[month]
-            yshift_val = 25 + count * 25
-            # Alternate xshift slightly for clarity
-            xshift_val = (-10 if count % 2 == 0 else 10)
-            fig.add_annotation(
-                x=month,
-                y=row["Cash"],
-                text=event,
-                showarrow=True,
-                arrowhead=1,
-                yshift=yshift_val,
-                xshift=xshift_val,
-                bgcolor="white",
-                font=dict(size=10)
-            )
-            month_annotation_count[month] += 1
+
+# Replace per-event stars with a single grouped trace per month
+event_months = df[df["Label"] != ""]
+grouped_labels = event_months.groupby("Month").agg({
+    "Label": lambda x: " | ".join(x),
+    "Cash": "first"
+}).reset_index()
+
+fig.add_trace(
+    go.Scatter(
+        x=grouped_labels["Month"],
+        y=grouped_labels["Cash"],
+        mode="markers",
+        marker=dict(symbol="star", size=12, color="purple"),
+        name="Key Events",
+        hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
+        text=grouped_labels["Label"]
+    )
+)
 
 fig.update_layout(
     title="Cash and Debt Balances Over Time", xaxis_title="Month", yaxis_title="CAD", height=600
@@ -317,25 +310,25 @@ fig_combined.add_trace(
     )
 )
 
-# Add annotations for key events as markers with hover text
+
+# Add grouped star markers for key events per month on surplus line for context
 event_months = df[df["Label"] != ""]
-for i, row in event_months.iterrows():
-    # Place annotation marker at cash or surplus line (choose surplus for context)
-    y_val = row["Monthly Surplus"]
-    # If surplus is None or zero, fallback to zero for marker placement
-    if pd.isna(y_val):
-        y_val = 0
-    fig_combined.add_trace(
-        go.Scatter(
-            x=[row["Month"]],
-            y=[y_val],
-            mode="markers",
-            marker=dict(symbol="star", size=12, color="purple"),
-            name=row["Label"],
-            hovertemplate=f"{row['Label']}<br>Month: {row['Month']}<extra></extra>",
-            showlegend=False,
-        )
+grouped_labels2 = event_months.groupby("Month").agg({
+    "Label": lambda x: " | ".join(x),
+    "Monthly Surplus": "first"
+}).reset_index()
+fig_combined.add_trace(
+    go.Scatter(
+        x=grouped_labels2["Month"],
+        y=[y if not pd.isna(y) else 0 for y in grouped_labels2["Monthly Surplus"]],
+        mode="markers",
+        marker=dict(symbol="star", size=12, color="purple"),
+        name="Key Events",
+        hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
+        text=grouped_labels2["Label"],
+        showlegend=True,
     )
+)
 
 fig_combined.update_layout(
     title="Monthly Income, Expenses, and Surplus",
@@ -369,6 +362,9 @@ with st.expander("📋 Assumptions Summary", expanded=True):
 - CRA and HELOC interest applied monthly
 - Surplus cash goes first to CRA, then HELOC
 - Cash is preserved until debt is fully paid
+
+---
+💡 Key Events shown as purple stars may combine multiple labels (e.g., Bonus + Refund). Hover to see details.
         """
     )
 
