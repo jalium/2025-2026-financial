@@ -4,6 +4,21 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 
+# Minimalistic header font style
+st.markdown(
+    "<style>h1 { font-family: 'Helvetica Neue', sans-serif; font-weight: 300; }</style>",
+    unsafe_allow_html=True
+)
+# Sidebar gentle background tint
+st.markdown(
+    """
+    <style>
+    .css-1d391kg { background-color: #f5f5f5; }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 def run_simulation(
     jack_income_usd,
@@ -186,7 +201,7 @@ def run_simulation(
 st.set_page_config(layout="wide")
 
 # Sidebar controls
-st.sidebar.title("Simulation Controls")
+st.sidebar.title("🧭 Navigate Your Scenario")
 jack_income = st.sidebar.number_input("Jack's Monthly Income (USD)", value=12600)
 fx_rate = st.sidebar.slider(
     "USD to CAD Exchange Rate", min_value=1.2, max_value=1.5, value=1.35, step=0.01
@@ -219,7 +234,7 @@ df = run_simulation(
 )
 
 # Display plots
-st.title("2025 Financial Dashboard")
+st.title("✨ Forward Flow: 2025+ Cash Compass")
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=df["Month"], y=df["Cash"], name="Cash Position"))
 fig.add_trace(
@@ -242,7 +257,7 @@ fig.add_trace(
         x=grouped_labels["Month"],
         y=grouped_labels["Cash"],
         mode="markers",
-        marker=dict(symbol="star", size=12, color="purple"),
+        marker=dict(symbol="star", size=14, color="gold"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels["Label"]
@@ -322,7 +337,7 @@ fig_combined.add_trace(
         x=grouped_labels2["Month"],
         y=[y if not pd.isna(y) else 0 for y in grouped_labels2["Monthly Surplus"]],
         mode="markers",
-        marker=dict(symbol="star", size=12, color="purple"),
+        marker=dict(symbol="star", size=14, color="gold"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels2["Label"],
@@ -341,7 +356,7 @@ fig_combined.update_layout(
 st.plotly_chart(fig_combined, use_container_width=True)
 
 # Assumptions Sidebar Section
-with st.expander("📋 Assumptions Summary", expanded=True):
+with st.expander("🔍 Model Assumptions + Flow Notes", expanded=True):
     st.markdown(
         """
 ### 💡 Key Financial Assumptions
@@ -364,7 +379,7 @@ with st.expander("📋 Assumptions Summary", expanded=True):
 - Cash is preserved until debt is fully paid
 
 ---
-💡 Key Events shown as purple stars may combine multiple labels (e.g., Bonus + Refund). Hover to see details.
+⭐ **Key Events** shown as gold stars may combine multiple occurrences (e.g., Bonus + Refund). Hover for breakdown.
         """
     )
 
