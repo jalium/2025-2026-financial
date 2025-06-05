@@ -5,21 +5,24 @@ import plotly.graph_objects as go
 import numpy as np
 
 st.set_page_config(layout="wide")
+st.caption("A guided snapshot of your financial pathway, 2025–2027.")
 
-# Minimalistic header font style
-st.markdown(
-    "<style>h1 { font-family: 'Helvetica Neue', sans-serif; font-weight: 300; }</style>",
-    unsafe_allow_html=True
-)
-# Sidebar gentle background tint
-st.markdown(
-    """
-    <style>
-    .css-1d391kg { background-color: #f5f5f5; }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Minimalistic header font style and sidebar background
+st.markdown("""
+<style>
+html, body, [class*="css"]  {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+}
+h1, h2, h3 {
+    font-weight: 400;
+}
+section[data-testid="stSidebar"] {
+    background-color: #fafafa;
+    border-right: 1px solid #e0e0e0;
+}
+</style>
+""", unsafe_allow_html=True)
 
 
 def run_simulation(
@@ -265,7 +268,14 @@ fig.add_trace(
 )
 
 fig.update_layout(
-    title="Cash and Debt Balances Over Time", xaxis_title="Month", yaxis_title="CAD", height=600
+    title="Cash and Debt Balances Over Time",
+    xaxis_title="Month",
+    yaxis_title="CAD",
+    height=600,
+    template="simple_white",
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="#333", size=13, family="DM Sans")
 )
 st.plotly_chart(fig, use_container_width=True)
 
@@ -274,7 +284,15 @@ fig2 = go.Figure()
 fig2.add_trace(go.Bar(x=df["Month"], y=df["CRA Interest"], name="CRA Interest"))
 fig2.add_trace(go.Bar(x=df["Month"], y=df["HELOC Interest"], name="HELOC Interest"))
 fig2.update_layout(
-    barmode="stack", title="Monthly Interest Payments", xaxis_title="Month", yaxis_title="CAD", height=400
+    barmode="stack",
+    title="Monthly Interest Payments",
+    xaxis_title="Month",
+    yaxis_title="CAD",
+    height=400,
+    template="simple_white",
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="#333", size=13, family="DM Sans")
 )
 st.plotly_chart(fig2, use_container_width=True)
 
@@ -351,6 +369,10 @@ fig_combined.update_layout(
     yaxis_title="CAD",
     height=500,
     hovermode="x unified",
+    template="simple_white",
+    plot_bgcolor="rgba(0,0,0,0)",
+    paper_bgcolor="rgba(0,0,0,0)",
+    font=dict(color="#333", size=13, family="DM Sans")
 )
 
 st.plotly_chart(fig_combined, use_container_width=True)
@@ -379,7 +401,9 @@ with st.expander("🔍 Model Assumptions + Flow Notes", expanded=True):
 - Cash is preserved until debt is fully paid
 
 ---
-⭐ **Key Events** shown as gold stars may combine multiple occurrences (e.g., Bonus + Refund). Hover for breakdown.
+⭐ **Key Events Legend**  
+- 🟡 Gold Star: Month includes multiple financial events  
+- Hover to see event details per month
         """
     )
 
