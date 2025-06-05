@@ -5,7 +5,6 @@ import plotly.graph_objects as go
 import numpy as np
 
 st.set_page_config(layout="wide")
-st.caption("A guided snapshot of your financial pathway, 2025–2027.")
 
 # Minimalistic header font style and sidebar background
 st.markdown("""
@@ -239,12 +238,21 @@ df = run_simulation(
 # Display plots
 st.title("✨ Forward Flow: 2025+ Cash Compass")
 fig = go.Figure()
-fig.add_trace(go.Scatter(x=df["Month"], y=df["Cash"], name="Cash Position"))
+fig.add_trace(go.Scatter(
+    x=df["Month"], y=df["Cash"], name="Cash Position",
+    line=dict(color="#22223b")
+))
 fig.add_trace(
-    go.Scatter(x=df["Month"], y=df["CRA Balance"], name="CRA Balance", line=dict(dash="dash"))
+    go.Scatter(
+        x=df["Month"], y=df["CRA Balance"], name="CRA Balance",
+        line=dict(dash="dash", color="#9a8c98")
+    )
 )
 fig.add_trace(
-    go.Scatter(x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance", line=dict(dash="dot"))
+    go.Scatter(
+        x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance",
+        line=dict(dash="dot", color="#c9ada7")
+    )
 )
 
 
@@ -260,7 +268,7 @@ fig.add_trace(
         x=grouped_labels["Month"],
         y=grouped_labels["Cash"],
         mode="markers",
-        marker=dict(symbol="star", size=14, color="gold"),
+        marker=dict(symbol="star", size=14, color="#f4a261"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels["Label"]
@@ -281,8 +289,12 @@ st.plotly_chart(fig, use_container_width=True)
 
 # Interest stacked chart
 fig2 = go.Figure()
-fig2.add_trace(go.Bar(x=df["Month"], y=df["CRA Interest"], name="CRA Interest"))
-fig2.add_trace(go.Bar(x=df["Month"], y=df["HELOC Interest"], name="HELOC Interest"))
+fig2.add_trace(go.Bar(
+    x=df["Month"], y=df["CRA Interest"], name="CRA Interest", marker_color="#118ab2"
+))
+fig2.add_trace(go.Bar(
+    x=df["Month"], y=df["HELOC Interest"], name="HELOC Interest", marker_color="#fb8500"
+))
 fig2.update_layout(
     barmode="stack",
     title="Monthly Interest Payments",
@@ -304,7 +316,7 @@ fig_combined.add_trace(
         x=df["Month"],
         y=df["Monthly Income"],
         name="Monthly Income",
-        line=dict(color="blue"),
+        line=dict(color="#006d77"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -314,30 +326,30 @@ fig_combined.add_trace(
         x=df["Month"],
         y=df["Monthly Expenses"],
         name="Monthly Expenses",
-        line=dict(color="orange"),
+        line=dict(color="#e29578"),
         mode="lines+markers",
         marker=dict(size=6),
     )
 )
 
-# Surplus positive values in green
+# Surplus positive values in soft seafoam
 fig_combined.add_trace(
     go.Scatter(
         x=df["Month"],
         y=[val if val >= 0 else None for val in df["Monthly Surplus"]],
         name="Surplus",
-        line=dict(color="green"),
+        line=dict(color="#83c5be"),
         mode="lines+markers",
         marker=dict(size=6),
     )
 )
-# Surplus negative values in red (deficit)
+# Surplus negative values in rose red (deficit)
 fig_combined.add_trace(
     go.Scatter(
         x=df["Month"],
         y=[val if val < 0 else None for val in df["Monthly Surplus"]],
         name="Deficit",
-        line=dict(color="red"),
+        line=dict(color="#ef476f"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -355,7 +367,7 @@ fig_combined.add_trace(
         x=grouped_labels2["Month"],
         y=[y if not pd.isna(y) else 0 for y in grouped_labels2["Monthly Surplus"]],
         mode="markers",
-        marker=dict(symbol="star", size=14, color="gold"),
+        marker=dict(symbol="star", size=14, color="#f4a261"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels2["Label"],
@@ -399,11 +411,6 @@ with st.expander("🔍 Model Assumptions + Flow Notes", expanded=True):
 - CRA and HELOC interest applied monthly
 - Surplus cash goes first to CRA, then HELOC
 - Cash is preserved until debt is fully paid
-
----
-⭐ **Key Events Legend**  
-- 🟡 Gold Star: Month includes multiple financial events  
-- Hover to see event details per month
         """
     )
 
