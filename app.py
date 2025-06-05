@@ -47,7 +47,7 @@ def run_simulation(
         if m.year == 2026:
             net += 1200  # FTC benefit begins in 2026
 
-        label = ""
+        labels = []
 
         # Apply bonus and loan
         if m_str == bonus_month:
@@ -77,7 +77,7 @@ def run_simulation(
 
         # Apply cottage proceeds to CRA first
         if m_str == cottage_month:
-            label = "Cottage"
+            labels.append("Cottage")
             net_cottage_proceeds = cottage_sale_price - 285000  # 245K mortgage + 40K tax estimate
             if cra_bal > 0:
                 applied = min(net_cottage_proceeds, cra_bal)
@@ -99,7 +99,7 @@ def run_simulation(
             # add $420K sale proceeds, $135K goes to debt as before, rest used for taxes + capital gains
             # assume $12K tax bill appears following month
         elif m_str == "2025-11":
-            label = "CG Tax"
+            labels.append("CG Tax")
             cash -= 12000
 
         # Interest accrual
@@ -127,7 +127,7 @@ def run_simulation(
 
         # Apply loan repayment at end of 2026
         if m_str == loan_repay_month:
-            label += " | Loan"
+            labels.append("Loan")
             cash -= 50000
 
         # Apply remaining available_cash to CRA first, then HELOC
@@ -146,24 +146,24 @@ def run_simulation(
 
         # Annotations
         if m_str == "2025-11":
-            label += "CG Tax"
+            labels.append("CG Tax")
         if m_str == cottage_month:
-            label += " | Cottage"
+            labels.append("Cottage")
         if m_str == bonus_month:
-            label += " | Bonus"
+            labels.append("Bonus")
         if m_str == refund_month:
-            label += " | Refund"
+            labels.append("Refund")
         if m_str == jessica_start_month:
-            label += " | Jessica Starts"
+            labels.append("Jessica Starts")
         if m_str == "2026-01":
-            label += " | FTC Relief"
+            labels.append("FTC Relief")
         if not cra_paid_off and cra_bal <= 0:
-            label += " | CRA Paid Off"
+            labels.append("CRA Paid Off")
             cra_paid_off = True
         if not heloc_paid_off and heloc_bal <= 0:
-            label += " | HELOC Paid Off"
+            labels.append("HELOC Paid Off")
             heloc_paid_off = True
-        label = label.strip(" |")
+        label = " | ".join(labels)
 
         data.append(
             {
@@ -232,15 +232,18 @@ fig.add_trace(
 # Add text labels for key dips with increased vertical offset and improved readability
 for i, row in df.iterrows():
     if row["Label"]:
-        fig.add_annotation(
-            x=row["Month"],
-            y=row["Cash"],
-            text=row["Label"],
-            showarrow=True,
-            arrowhead=1,
-            yshift=40,
-            bgcolor="white"
-        )
+        events = row["Label"].split(" | ")
+        for idx, event in enumerate(events):
+            yshift_val = 40 + idx * 20
+            fig.add_annotation(
+                x=row["Month"],
+                y=row["Cash"],
+                text=event,
+                showarrow=True,
+                arrowhead=1,
+                yshift=yshift_val,
+                bgcolor="white"
+            )
 
 fig.update_layout(
     title="Cash and Debt Balances Over Time", xaxis_title="Month", yaxis_title="CAD", height=600
