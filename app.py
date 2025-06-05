@@ -94,7 +94,7 @@ def run_simulation(
 
         # Apply cottage proceeds to CRA first
         if m_str == cottage_month:
-            labels.append("Cottage")
+            labels.append("Cottage Sale")
             net_cottage_proceeds = cottage_sale_price - 285000  # 245K mortgage + 40K tax estimate
             if cra_bal > 0:
                 applied = min(net_cottage_proceeds, cra_bal)
@@ -116,7 +116,7 @@ def run_simulation(
             # add $420K sale proceeds, $135K goes to debt as before, rest used for taxes + capital gains
             # assume $12K tax bill appears following month
         elif m_str == "2025-11":
-            labels.append("CG Tax")
+            labels.append("Capital Gains Tax Paid")
             cash -= 12000
 
         # Interest accrual
@@ -144,7 +144,7 @@ def run_simulation(
 
         # Apply loan repayment at end of 2026
         if m_str == loan_repay_month:
-            labels.append("Loan")
+            labels.append("Loan Repayment")
             cash -= 50000
 
         # Apply remaining available_cash to CRA first, then HELOC
@@ -163,24 +163,24 @@ def run_simulation(
 
         # Annotations
         if m_str == "2025-11":
-            labels.append("CG Tax")
+            labels.append("Capital Gains Tax Paid")
         if m_str == cottage_month:
-            labels.append("Cottage")
+            labels.append("Cottage Sale")
         if m_str == bonus_month:
-            labels.append("Bonus")
+            labels.append("Jack Receives Bonus")
         if m_str == refund_month:
-            labels.append("Refund")
+            labels.append("ABIL Tax Refund")
         if m_str == jessica_start_month:
-            labels.append("Jessica Starts")
+            labels.append("Jessica Returns to Work")
         if m_str == "2026-01":
-            labels.append("FTC Relief")
+            labels.append("FTC Relief Begins")
         if not cra_paid_off and cra_bal <= 0:
-            labels.append("CRA Paid Off")
+            labels.append("CRA Debt Paid Off")
             cra_paid_off = True
         if not heloc_paid_off and heloc_bal <= 0:
             labels.append("HELOC Paid Off")
             heloc_paid_off = True
-        label = " | ".join(labels)
+        label = " | ".join(sorted(set(labels)))
 
         data.append(
             {
