@@ -240,18 +240,18 @@ st.title("✨ Forward Flow: 2025+ Cash Compass")
 fig = go.Figure()
 fig.add_trace(go.Scatter(
     x=df["Month"], y=df["Cash"], name="Cash Position",
-    line=dict(color="#1f2937")
+    line=dict(color="#4B9CD3")
 ))
 fig.add_trace(
     go.Scatter(
         x=df["Month"], y=df["CRA Balance"], name="CRA Balance",
-        line=dict(dash="dash", color="#7c3aed")
+        line=dict(dash="dash", color="#9B59B6")
     )
 )
 fig.add_trace(
     go.Scatter(
         x=df["Month"], y=df["HELOC Balance"], name="HELOC Balance",
-        line=dict(dash="dot", color="#f43f5e")
+        line=dict(dash="dot", color="#E74C3C")
     )
 )
 
@@ -268,7 +268,7 @@ fig.add_trace(
         x=grouped_labels["Month"],
         y=grouped_labels["Cash"],
         mode="markers",
-        marker=dict(symbol="star", size=14, color="#f59e0b"),
+        marker=dict(symbol="star", size=14, color="#F4D03F"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels["Label"]
@@ -290,10 +290,10 @@ st.plotly_chart(fig, use_container_width=True)
 # Interest stacked chart
 fig2 = go.Figure()
 fig2.add_trace(go.Bar(
-    x=df["Month"], y=df["CRA Interest"], name="CRA Interest", marker_color="#3b82f6"
+    x=df["Month"], y=df["CRA Interest"], name="CRA Interest", marker_color="#5DADE2"
 ))
 fig2.add_trace(go.Bar(
-    x=df["Month"], y=df["HELOC Interest"], name="HELOC Interest", marker_color="#f97316"
+    x=df["Month"], y=df["HELOC Interest"], name="HELOC Interest", marker_color="#F5B041"
 ))
 fig2.update_layout(
     barmode="stack",
@@ -316,7 +316,7 @@ fig_combined.add_trace(
         x=df["Month"],
         y=df["Monthly Income"],
         name="Monthly Income",
-        line=dict(color="#0f766e"),
+        line=dict(color="#2ECC71"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -326,7 +326,7 @@ fig_combined.add_trace(
         x=df["Month"],
         y=df["Monthly Expenses"],
         name="Monthly Expenses",
-        line=dict(color="#f87171"),
+        line=dict(color="#F39C12"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -338,7 +338,7 @@ fig_combined.add_trace(
         x=df["Month"],
         y=[val if val >= 0 else None for val in df["Monthly Surplus"]],
         name="Surplus",
-        line=dict(color="#34d399"),
+        line=dict(color="#1ABC9C"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -349,7 +349,7 @@ fig_combined.add_trace(
         x=df["Month"],
         y=[val if val < 0 else None for val in df["Monthly Surplus"]],
         name="Deficit",
-        line=dict(color="#f43f5e"),
+        line=dict(color="#E74C3C"),
         mode="lines+markers",
         marker=dict(size=6),
     )
@@ -367,7 +367,7 @@ fig_combined.add_trace(
         x=grouped_labels2["Month"],
         y=[y if not pd.isna(y) else 0 for y in grouped_labels2["Monthly Surplus"]],
         mode="markers",
-        marker=dict(symbol="star", size=14, color="#f59e0b"),
+        marker=dict(symbol="star", size=14, color="#F4D03F"),
         name="Key Events",
         hovertemplate="<b>%{text}</b><br>Month: %{x}<extra></extra>",
         text=grouped_labels2["Label"],
